@@ -11,6 +11,14 @@ def build_parser():
     Builds the parser for reading the command line arguments
     :return: The argument parser
     """
+    class PostprocAction(argparse.Action):
+        def __call__(self, parser, args, values, option_string=None):
+            try:
+                postproc_functions = [rosbag_pandas.POSTPROCS[arg] for arg in values]
+            except KeyError as e:
+                raise ValueError('Invalid postproc %s' % e)
+            setattr(args, self.dest, postproc_functions)
+
     parser = argparse.ArgumentParser(description='Script to parse bagfile to csv file')
     parser.add_argument('-b', '--bag', help='Bag file to read', required=True,
                         type=str)
@@ -21,6 +29,11 @@ def build_parser():
                         help='List of keys to exclude',
                         nargs='*')
     parser.add_argument('-o', '--output', help='name of the output file', required=True)
+    parser.add_argument('--postproc',
+                        action=PostprocAction,
+                        help="Post process dataframe before writing to csv. Choose from {}".format(rosbag_pandas.POSTPROCS.keys()),
+                        nargs='+',
+                        default=None)
     parser.add_argument('-v', '--verbose',
                         help="Log verbose",
                         default=False, action="store_true")
@@ -34,5 +47,5 @@ if __name__ == '__main__':
     if args.verbose:
         logging.getLogger().setLevel(logging.DEBUG)
 
-    df = rosbag_pandas.bag_to_dataframe(args.bag, include=args.include, exclude=args.exclude)
+    df = rosbag_pandas.bag_to_dataframe(args.bag, include=args.include, exclude=args.exclude, postproc=args.postproc)
     df.to_csv(args.output)

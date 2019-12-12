@@ -13,6 +13,14 @@ class RosbagPandaException(Exception):
     pass
 
 
+POSTPROCS = {
+    'ffill': lambda df: df.fillna(method='ffill'),
+    'bfill': lambda df: df.fillna(method='bfill'),
+    'interpolate': lambda df: df.interpolate(method='linear'),
+    'dropna': lambda df: df.dropna(),
+}
+
+
 def topics_from_keys(keys):
     """
     Extracts the desired topics from specified keys
@@ -29,7 +37,7 @@ def topics_from_keys(keys):
     return list(topics)
 
 
-def bag_to_dataframe(bag_name, include=None, exclude=None):
+def bag_to_dataframe(bag_name, include=None, exclude=None, postproc=None):
     """
     Read in a rosbag file and create a pandas data frame that
     is indexed by the time the message was recorded in the bag.
@@ -81,7 +89,14 @@ def bag_to_dataframe(bag_name, include=None, exclude=None):
     bag.close()
 
     # now we have read all of the messages its time to assemble the dataframe
-    return pd.DataFrame(data=data_dict, index=index)
+    df = pd.DataFrame(data=data_dict, index=pd.Index(data=index, name="Time"))
+
+    if postproc:
+        logging.debug("Postprocess %d steps", len(postproc))
+        for p in postproc:
+            df = p(df)
+
+    return df
 
 
 def _get_flattened_dictionary_from_ros_msg(msg):
