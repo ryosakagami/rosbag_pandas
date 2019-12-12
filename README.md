@@ -38,8 +38,8 @@ This will select the `/pose/position/x` property of topic `/pose` in the message
 
 Convert a ROS bag file to a CSV file:
 ```
-usage: bag_csv [-h] [-b BAG] [-i [INCLUDE [INCLUDE ...]]]
-               [-e [EXCLUDE [EXCLUDE ...]]] [-o OUTPUT] [-v]
+usage: bag_csv [-h] -b BAG [-i [INCLUDE [INCLUDE ...]]]
+               [-e [EXCLUDE [EXCLUDE ...]]] -o OUTPUT [-v]
 
 Script to parse bagfile to csv file
 
@@ -47,9 +47,9 @@ optional arguments:
   -h, --help            show this help message and exit
   -b BAG, --bag BAG     Bag file to read
   -i [INCLUDE [INCLUDE ...]], --include [INCLUDE [INCLUDE ...]]
-                        List for topics to include
+                        List of keys to include
   -e [EXCLUDE [EXCLUDE ...]], --exclude [EXCLUDE [EXCLUDE ...]]
-                        List for topics to exclude
+                        List of keys to exclude
   -o OUTPUT, --output OUTPUT
                         name of the output file
   -v, --verbose         Log verbose

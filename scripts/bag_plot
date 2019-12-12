@@ -57,6 +57,5 @@ if __name__ == '__main__':
     if args.verbose:
         logging.getLogger().setLevel(logging.DEBUG)
 
-    topics = rosbag_pandas.topics_from_keys(args.key)
-    df = rosbag_pandas.bag_to_dataframe(args.bag, include=topics)
+    df = rosbag_pandas.bag_to_dataframe(args.bag, include=args.key)
     graph(df, args.key, args.sharey)

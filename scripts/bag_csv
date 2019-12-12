@@ -15,10 +15,10 @@ def build_parser():
     parser.add_argument('-b', '--bag', help='Bag file to read', required=True,
                         type=str)
     parser.add_argument('-i', '--include',
-                        help='List for topics to include',
+                        help='List of keys to include',
                         nargs='*')
     parser.add_argument('-e', '--exclude',
-                        help='List for topics to exclude',
+                        help='List of keys to exclude',
                         nargs='*')
     parser.add_argument('-o', '--output', help='name of the output file', required=True)
     parser.add_argument('-v', '--verbose',

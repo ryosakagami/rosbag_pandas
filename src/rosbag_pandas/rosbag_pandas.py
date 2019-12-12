@@ -35,8 +35,8 @@ def bag_to_dataframe(bag_name, include=None, exclude=None):
     is indexed by the time the message was recorded in the bag.
 
     :param bag_name: String name for the bag file
-    :param include: None, or List of Topics to include in the dataframe
-    :param exclude: None, or List of Topics to exclude in the dataframe (only applies if include is None)
+    :param include: None, or list of keys to include in the dataframe
+    :param exclude: None, or list of keys to exclude in the dataframe (only applies if include is None)
 
     :return: a pandas dataframe object
     """
@@ -67,6 +67,8 @@ def bag_to_dataframe(bag_name, include=None, exclude=None):
         flattened_dict = _get_flattened_dictionary_from_ros_msg(msg)
         for key, item in flattened_dict.iteritems():
             data_key = topic + "/" + key
+            if include is not None and data_key not in include:
+                continue
             if data_key not in data_dict:
                 if isinstance(item, float) or isinstance(item, int):
                     data_dict[data_key] = np.empty(df_length)
@@ -100,5 +102,5 @@ def _get_filtered_topics(topics, include, exclude):
     :return: filtered topics
     """
     logging.debug("Filtering topics (include=%s, exclude=%s) ...", include, exclude)
-    return [t for t in include if t in topics] if include is not None else \
-        [t for t in topics if t not in exclude] if exclude is not None else topics
+    return [t for t in topics_from_keys(include) if t in topics] if include is not None else \
+        [t for t in topics_from_keys(exclude) if t not in exclude] if exclude is not None else topics
